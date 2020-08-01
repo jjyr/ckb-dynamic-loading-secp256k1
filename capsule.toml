@@ -1,0 +1,5 @@
+deployment = "deployment.toml"
+
+[[contracts]]
+name = "ckb-dynamic-loading-secp256k1"
+template_type = "Rust"
