@@ -27,9 +27,9 @@ impl Secp256k1Lib {
         }
     }
 
-    pub fn validate_blake2b_sighash_all(&self, public_key_hash: &[u8; 20]) -> Result<(), i32> {
+    pub fn validate_blake2b_sighash_all(&self, public_key_hash: &mut [u8; 20]) -> Result<(), i32> {
         let f = &self.validate_blake2b_sighash_all;
-        let error_code = unsafe {f(public_key_hash.as_ptr())};
+        let error_code = unsafe {f(public_key_hash.as_mut_ptr())};
         if error_code == 0 {
             Ok(())
         } else {

@@ -12,7 +12,7 @@ A contract that do secp256k1 verification via dynamic loading.
 #### 1. init submodules
 
 ``` sh
-git submodule init && git submodule update -r
+git submodule init && git submodule update -r --init
 ```
 
 #### 2. build the shared binary `secp256k1_blake2b_sighash_all_dual`

@@ -47,6 +47,7 @@ enum Error {
     Encoding,
     // Add customized errors here...
     Secp256k1,
+    WrongPubkey,
 }
 
 impl From<SysError> for Error {
@@ -70,18 +71,21 @@ fn main() -> Result<(), Error> {
         return Err(Error::Encoding);
     }
 
-    let mut pubkey_hash = [0u8; 20];
-    pubkey_hash.copy_from_slice(&args);
-
     // create a DL context with 128K buffer size
     let mut context = CKBDLContext::<[u8; 128 * 1024]>::new();
 
-    // validate secp256k1 pubkey
+    // recover pubkey_hash
+    let mut pubkey_hash = [0u8; 20];
     let lib = Secp256k1Lib::load(&mut context);
-    lib.validate_blake2b_sighash_all(&pubkey_hash).map_err(|err_code| {
+    lib.validate_blake2b_sighash_all(&mut pubkey_hash).map_err(|err_code| {
         debug!("secp256k1 error {}", err_code);
         Error::Secp256k1
     })?;
+
+    // compare with expected pubkey_hash
+    if &pubkey_hash[..] != &args[..] {
+        return Err(Error::WrongPubkey);
+    }
 
     Ok(())
 }
