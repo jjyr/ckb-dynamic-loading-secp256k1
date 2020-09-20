@@ -10,16 +10,21 @@ const BUF_SIZE: usize = 8 * 1024;
 const CKB_HASH_PERSONALIZATION: &[u8] = b"ckb-default-hash";
 
 fn main() {
+    let path = Path::new("../ckb-miscellaneous-scripts/build/secp256k1_blake2b_sighash_all_dual");
+
+    if !path.exists() {
+        // do nothing if binary is not exists
+        return;
+    }
+
     let out_path = Path::new("src").join("code_hashes.rs");
     let mut out_file = BufWriter::new(File::create(&out_path).expect("create code_hashes.rs"));
-
-    let path = "../ckb-miscellaneous-scripts/build/secp256k1_blake2b_sighash_all_dual";
 
     let mut buf = [0u8; BUF_SIZE];
 
     // build hash
     let mut blake2b = new_blake2b();
-    let mut fd = File::open(&path).expect("open file");
+    let mut fd = File::open(path).expect("open file");
     loop {
         let read_bytes = fd.read(&mut buf).expect("read file");
         if read_bytes > 0 {
