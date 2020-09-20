@@ -13,7 +13,7 @@ fn main() {
     let out_path = Path::new("src").join("code_hashes.rs");
     let mut out_file = BufWriter::new(File::create(&out_path).expect("create code_hashes.rs"));
 
-    let path = "../../ckb-miscellaneous-scripts/build/secp256k1_blake2b_sighash_all_dual";
+    let path = "../ckb-miscellaneous-scripts/build/secp256k1_blake2b_sighash_all_dual";
 
     let mut buf = [0u8; BUF_SIZE];
 
@@ -37,7 +37,7 @@ fn main() {
         "pub const CODE_HASH_SECP256K1: [u8; 32] = {:?};\n",
         hash
     )
-        .expect("write to code_hashes.rs");
+    .expect("write to code_hashes.rs");
 }
 
 pub fn new_blake2b() -> Blake2b {
@@ -45,4 +45,3 @@ pub fn new_blake2b() -> Blake2b {
         .personal(CKB_HASH_PERSONALIZATION)
         .build()
 }
-

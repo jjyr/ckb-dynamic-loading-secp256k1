@@ -1,10 +1,15 @@
 # ckb-dynamic-loading-secp256k1
 
-A contract that do secp256k1 verification via dynamic loading.
+A contract demonstrate secp256k1 verification via dynamic loading.
+
+This project contains two crates:
+
+* `ckb-lib-secp256k1` - a library helps users do secp256k1 verification via dynamic loading, you can reference it in your own project.
+* `ckb-dynamic-loading-secp256k1` - a contract that demonstrate how to use the `ckb-lib-secp256k1` library.
 
 ### Pre-requirement
 
-* `ckb-std > 0.6.0` which supports dynamic loading.
+* `capsule > 0.3.0`
 * [secp256k1_blake2b_sighash_all_dual](https://github.com/nervosnetwork/ckb-miscellaneous-scripts/blob/master/c/secp256k1_blake2b_sighash_all_dual.c) which supports loaded as a shared library.
 
 ### Build contracts:

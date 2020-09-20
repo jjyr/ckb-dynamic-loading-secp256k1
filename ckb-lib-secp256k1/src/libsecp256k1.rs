@@ -7,11 +7,11 @@ type ValidateBlake2bSighashAll = unsafe extern "C" fn(pub_key_hash: *const u8) -
 /// Symbol name
 const VALIDATE_BLAKE2B_SIGHASH_ALL: &[u8; 38] = b"validate_secp256k1_blake2b_sighash_all";
 
-pub struct Secp256k1Lib {
+pub struct LibSecp256k1 {
     validate_blake2b_sighash_all: Symbol<ValidateBlake2bSighashAll>,
 }
 
-impl Secp256k1Lib {
+impl LibSecp256k1 {
     pub fn load<T>(context: &mut CKBDLContext<T>) -> Self {
         // load library
         let lib = context.load(&CODE_HASH_SECP256K1).expect("load secp256k1");
@@ -22,7 +22,7 @@ impl Secp256k1Lib {
             .get(VALIDATE_BLAKE2B_SIGHASH_ALL)
             .expect("load function")
         };
-        Secp256k1Lib {
+        LibSecp256k1 {
             validate_blake2b_sighash_all,
         }
     }

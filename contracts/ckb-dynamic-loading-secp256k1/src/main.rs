@@ -4,9 +4,6 @@
 #![feature(alloc_error_handler)]
 #![feature(panic_info_message)]
 
-mod secp256k1;
-mod code_hashes;
-
 // Import from `core` instead of from `std` since we are in no-std mode
 use core::result::Result;
 
@@ -18,13 +15,14 @@ use core::result::Result;
 // https://nervosnetwork.github.io/ckb-std/riscv64imac-unknown-none-elf/doc/ckb_std/index.html
 use ckb_std::{
     ckb_types::{bytes::Bytes, prelude::*},
-    debug, default_alloc, entry,
+    debug, default_alloc,
+    dynamic_loading::CKBDLContext,
+    entry,
     error::SysError,
     high_level::load_script,
-    dynamic_loading::CKBDLContext,
 };
 
-use crate::secp256k1::Secp256k1Lib;
+use ckb_lib_secp256k1::LibSecp256k1;
 
 entry!(entry);
 default_alloc!();
@@ -76,11 +74,12 @@ fn main() -> Result<(), Error> {
 
     // recover pubkey_hash
     let mut pubkey_hash = [0u8; 20];
-    let lib = Secp256k1Lib::load(&mut context);
-    lib.validate_blake2b_sighash_all(&mut pubkey_hash).map_err(|err_code| {
-        debug!("secp256k1 error {}", err_code);
-        Error::Secp256k1
-    })?;
+    let lib = LibSecp256k1::load(&mut context);
+    lib.validate_blake2b_sighash_all(&mut pubkey_hash)
+        .map_err(|err_code| {
+            debug!("secp256k1 error {}", err_code);
+            Error::Secp256k1
+        })?;
 
     // compare with expected pubkey_hash
     if &pubkey_hash[..] != &args[..] {

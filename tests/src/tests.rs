@@ -1,11 +1,17 @@
 use super::*;
-use ckb_testtool::context::Context;
-use ckb_tool::ckb_types::{bytes::Bytes, core::{TransactionBuilder, TransactionView}, packed::{self, *}, prelude::*, H256};
 use ckb_system_scripts::BUNDLED_CELL;
+use ckb_testtool::context::Context;
 use ckb_tool::ckb_crypto::secp::{Generator, Privkey};
+use ckb_tool::ckb_error::assert_error_eq;
 use ckb_tool::ckb_hash::{blake2b_256, new_blake2b};
-use ckb_tool::ckb_error::{assert_error_eq};
-use ckb_tool::ckb_script::{ScriptError};
+use ckb_tool::ckb_script::ScriptError;
+use ckb_tool::ckb_types::{
+    bytes::Bytes,
+    core::{TransactionBuilder, TransactionView},
+    packed::{self, *},
+    prelude::*,
+    H256,
+};
 use std::fs;
 
 const MAX_CYCLES: u64 = 10_000_000;
@@ -52,11 +58,11 @@ fn sign_tx(tx: TransactionView, key: &Privkey) -> TransactionView {
     let sig = key.sign_recoverable(&message).expect("sign");
     signed_witnesses.push(
         witness
-        .as_builder()
-        .lock(Some(Bytes::from(sig.serialize())).pack())
-        .build()
-        .as_bytes()
-        .pack(),
+            .as_builder()
+            .lock(Some(Bytes::from(sig.serialize())).pack())
+            .build()
+            .as_bytes()
+            .pack(),
     );
     for i in 1..witnesses_len {
         signed_witnesses.push(tx.witnesses().get(i).unwrap());
@@ -65,7 +71,6 @@ fn sign_tx(tx: TransactionView, key: &Privkey) -> TransactionView {
         .set_witnesses(signed_witnesses)
         .build()
 }
-
 
 #[test]
 fn test_basic() {
@@ -79,7 +84,10 @@ fn test_basic() {
     let contract_bin: Bytes = Loader::default().load_binary("ckb-dynamic-loading-secp256k1");
     let out_point = context.deploy_cell(contract_bin);
 
-    let secp256k1_bin: Bytes = fs::read("../ckb-miscellaneous-scripts/build/secp256k1_blake2b_sighash_all_dual").expect("load secp256k1").into();
+    let secp256k1_bin: Bytes =
+        fs::read("../ckb-miscellaneous-scripts/build/secp256k1_blake2b_sighash_all_dual")
+            .expect("load secp256k1")
+            .into();
     let secp256k1_out_point = context.deploy_cell(secp256k1_bin);
     let secp256k1_dep = CellDep::new_builder()
         .out_point(secp256k1_out_point)
@@ -91,19 +99,18 @@ fn test_basic() {
         .out_point(secp256k1_data_out_point)
         .build();
 
-
     // prepare scripts
     let lock_script = context
-        .build_script(&out_point,pubkey_hash.to_vec().into())
+        .build_script(&out_point, pubkey_hash.to_vec().into())
         .expect("script");
     let lock_script_dep = CellDep::new_builder().out_point(out_point).build();
 
     // prepare cells
     let input_out_point = context.create_cell(
         CellOutput::new_builder()
-        .capacity(1000u64.pack())
-        .lock(lock_script.clone())
-        .build(),
+            .capacity(1000u64.pack())
+            .lock(lock_script.clone())
+            .build(),
         Bytes::new(),
     );
     let input = CellInput::new_builder()
@@ -143,7 +150,6 @@ fn test_basic() {
     println!("consume cycles: {}", cycles);
 }
 
-
 #[test]
 fn test_sign_with_wrong_key() {
     // generate key pair
@@ -157,7 +163,10 @@ fn test_sign_with_wrong_key() {
     let contract_bin: Bytes = Loader::default().load_binary("ckb-dynamic-loading-secp256k1");
     let out_point = context.deploy_cell(contract_bin);
 
-    let secp256k1_bin: Bytes = fs::read("../ckb-miscellaneous-scripts/build/secp256k1_blake2b_sighash_all_dual").expect("load secp256k1").into();
+    let secp256k1_bin: Bytes =
+        fs::read("../ckb-miscellaneous-scripts/build/secp256k1_blake2b_sighash_all_dual")
+            .expect("load secp256k1")
+            .into();
     let secp256k1_out_point = context.deploy_cell(secp256k1_bin);
     let secp256k1_dep = CellDep::new_builder()
         .out_point(secp256k1_out_point)
@@ -169,19 +178,18 @@ fn test_sign_with_wrong_key() {
         .out_point(secp256k1_data_out_point)
         .build();
 
-
     // prepare scripts
     let lock_script = context
-        .build_script(&out_point,pubkey_hash.to_vec().into())
+        .build_script(&out_point, pubkey_hash.to_vec().into())
         .expect("script");
     let lock_script_dep = CellDep::new_builder().out_point(out_point).build();
 
     // prepare cells
     let input_out_point = context.create_cell(
         CellOutput::new_builder()
-        .capacity(1000u64.pack())
-        .lock(lock_script.clone())
-        .build(),
+            .capacity(1000u64.pack())
+            .lock(lock_script.clone())
+            .build(),
         Bytes::new(),
     );
     let input = CellInput::new_builder()
@@ -218,11 +226,5 @@ fn test_sign_with_wrong_key() {
     let err = context
         .verify_tx(&tx, MAX_CYCLES)
         .expect_err("pass verification");
-    assert_error_eq!(
-        err,
-        ScriptError::ValidationFailure(6),
-    );
+    assert_error_eq!(err, ScriptError::ValidationFailure(6),);
 }
-
-
-
