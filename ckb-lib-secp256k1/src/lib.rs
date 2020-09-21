@@ -1,5 +1,7 @@
 #![no_std]
 
+extern crate alloc;
+
 mod code_hashes;
 mod libsecp256k1;
 
