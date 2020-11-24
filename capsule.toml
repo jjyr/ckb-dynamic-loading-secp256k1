@@ -1,4 +1,5 @@
 deployment = "deployment.toml"
+version = "0.4.3"
 
 [[contracts]]
 name = "ckb-dynamic-loading-secp256k1"
